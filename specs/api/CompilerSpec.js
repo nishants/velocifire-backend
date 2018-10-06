@@ -8,7 +8,7 @@ describe('Ping /', function () {
         .get('/hello')
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
-        .expect(200, done)
+        .expect(200)
         .end((err) => {
           if (err) return done(err);
           done();
