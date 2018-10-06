@@ -4,6 +4,7 @@ const
     app = require('../../src/app');
 
 describe('Ping /', function () {
+
   it('respond with message', function (done) {
     request(app)
         .get('/hello')
@@ -27,14 +28,11 @@ describe('/compiler', function () {
         .expect(200)
         .end((error, response) => {
           if (error) return done(error);
-          console.log("response", response.text)
           expect(response.text).to.eql("<h1>hello</h1>");
           done();
         });
   });
-});
 
-describe('/compiler', function () {
   it('should returned compiled html for velocity template', function (done) {
     request(app)
         .put('/compile')
@@ -44,9 +42,23 @@ describe('/compiler', function () {
         .expect(200)
         .end((error, response) => {
           if (error) return done(error);
-          console.log("response", response.text)
           expect(response.text).to.eql("<h1>hello mira</h1>");
           done();
         });
   });
+
+  it('should return template if compilation fails', function (done) {
+    request(app)
+        .put('/compile')
+        .send({template: "<h1>hello $customer.name</h1>", data: {}})
+        .set('Accept', 'text/html')
+        .expect('Content-Type', /text\/html/)
+        .expect(200)
+        .end((error, response) => {
+          if (error) return done(error);
+          expect(response.text).to.eql("<h1>hello $customer.name</h1>");
+          done();
+        });
+  });
+
 });
