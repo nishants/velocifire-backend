@@ -63,5 +63,23 @@ describe('/compiler', function () {
 
 });
 
+describe('/compile2', function () {
 
+  it.skip('should create object from script', function (done) {
+    request(app)
+        .put('/compile')
+        .send({template: "<h1>hello $customer.name()</h1>", data: '{customer: {name: () => "mira"}}'})
+        .set('Accept', 'text/html')
+        .expect('Content-Type', /text\/html/)
+        .expect(200)
+        .end((error, response) => {
+          if (error) return done(error);
+          expect(response.text).to.eql("<h1>hello mira</h1>");
+          done();
+        });
+  });
+
+
+
+})
 // password: velocifire/54321

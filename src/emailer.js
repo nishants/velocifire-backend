@@ -16,9 +16,6 @@ module.exports = {
     subject,
     html
   }, function (err, info) {
-    console.log("mail sending...")
-    console.log("err", err)
-    console.log("info", info)
     err? onError(err) : onSuccess(info);
   })
 };

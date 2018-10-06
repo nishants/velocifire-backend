@@ -7,7 +7,7 @@ const
     port = process.env.PORT || 3000;
 
 const
-    Emailer  = require('./emailer');
+    Emailer  = require('./emailer'),
     Compiler = require('./compiler');
 
 app.use(expressLogging(logger));
@@ -45,7 +45,7 @@ app.put('/send-mail', function (request, response) {
       onSuccess : info   => response.status(200).send({success: true  , info , html})
     });
   } catch(e){
-    response.status(500).send({success: false , error: e.message, stack: e.stack})
+    response.status(500).send({success: false , error: e.message, stack: e.stack});
   }
 
 });
@@ -54,6 +54,15 @@ app.put('/compile', function (request, response) {
   const
       template = request.body.template,
       data     = request.body.data;
+
+  response.set('Content-Type', 'text/html').status(200).send(Compiler.compile(template ,data));
+});
+
+app.put('/compile2', function (request, response) {
+  const
+      definition = request.body.data,
+      template = request.body.template,
+      data     = eval(`(() => {return ${definition};})()`);
 
   response.set('Content-Type', 'text/html').status(200).send(Compiler.compile(template ,data));
 });
