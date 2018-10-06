@@ -6,7 +6,9 @@ const
     bodyParser = require('body-parser'),
     port = process.env.PORT || 3000;
 
-const Compiler = require('./compiler');
+const
+    Emailer  = require('./emailer');
+    Compiler = require('./compiler');
 
 app.use(expressLogging(logger));
 app.use(bodyParser.json()); // for parsing application/json
@@ -23,6 +25,28 @@ app.use(function(request, response, next) {
 
 app.get('/hello', function (request, response) {
   response.status(200).send(JSON.stringify({message: 'all users sent'}));
+});
+
+app.put('/send-mail', function (request, response) {
+  const
+      template = request.body.template,
+      data     = request.body.data,
+      to       = request.body.to,
+      subject  = request.body.subject,
+      html     = Compiler.compile(template ,data);
+
+  try{
+    Emailer.send({
+      to,
+      subject,
+      html,
+      onError   : error  => response.status(500).send({success: false , error, html}),
+      onSuccess : info   => response.status(200).send({success: true  , info , html})
+    });
+  } catch(e){
+    response.status(500).send({success: false , error: e.message, stack: e.stack})
+  }
+
 });
 
 app.put('/compile', function (request, response) {
