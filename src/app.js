@@ -6,6 +6,8 @@ const
     bodyParser = require('body-parser'),
     port = process.env.PORT || 3000;
 
+const Compiler = require('./compiler');
+
 app.use(expressLogging(logger));
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-
@@ -21,6 +23,14 @@ app.use(function(request, response, next) {
 
 app.get('/hello', function (request, response) {
   response.status(200).send(JSON.stringify({message: 'all users sent'}));
+});
+
+app.put('/compile', function (request, response) {
+  const
+      template = request.body.template,
+      data     = request.body.data;
+
+  response.set('Content-Type', 'text/html').status(200).send(Compiler.compile(template ,data));
 });
 
 app.listen(app.get('port'), function() {
